@@ -27,10 +27,10 @@ export function WinOverlay() {
       });
     } else {
       try {
-        const raw = localStorage.getItem('flip7:stats');
+        const raw = localStorage.getItem('cardrush:stats');
         const stats = raw ? JSON.parse(raw) : { wins: 0, losses: 0, highScore: 0 };
         stats.highScore = Math.max(stats.highScore, winner?.totalScore ?? 0);
-        localStorage.setItem('flip7:stats', JSON.stringify(stats));
+        localStorage.setItem('cardrush:stats', JSON.stringify(stats));
       } catch {}
       setUI({ showWinOverlay: false });
       clearLocalGame();

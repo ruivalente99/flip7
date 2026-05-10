@@ -16,8 +16,8 @@ export function useRoomSync(code: string | null) {
   // Restore session from sessionStorage on mount if store lost state (e.g. hard reload)
   useEffect(() => {
     if (!playerId && typeof sessionStorage !== 'undefined') {
-      const savedId = sessionStorage.getItem('flip7:playerId');
-      const savedCode = sessionStorage.getItem('flip7:roomCode');
+      const savedId = sessionStorage.getItem('cardrush:playerId');
+      const savedCode = sessionStorage.getItem('cardrush:roomCode');
       if (savedId) setPlayerId(savedId);
       if (savedCode) setRoomCode(savedCode);
     }

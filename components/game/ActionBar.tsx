@@ -30,11 +30,11 @@ export function ActionBar({ state, playerId, onAction }: ActionBarProps) {
       <RiskIndicator deck={state.deck} hand={rs.hand} />
       <div className="flex gap-3">
         <Button
-          onClick={() => onAction({ type: 'FLIP' })}
+          onClick={() => onAction({ type: 'DRAW' })}
           className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 text-lg rounded-[var(--radius-xl)]"
           disabled={state.deck.length === 0}
         >
-          🎴 Flip
+          🃏 Draw
         </Button>
         <Button
           onClick={() => onAction({ type: 'STAY' })}

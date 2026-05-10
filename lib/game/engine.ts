@@ -10,7 +10,7 @@ function freshRoundState(): PlayerRoundState {
     stayed: false,
     busted: false,
     roundScore: 0,
-    isFlip7: false,
+    isLucky7: false,
   };
 }
 
@@ -67,7 +67,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       };
     }
 
-    case 'FLIP': {
+    case 'DRAW': {
       if (state.phase !== 'PLAYING') return state;
       if (state.deck.length === 0) return state;
 
@@ -81,7 +81,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
 
       // Handle special cards
       if (card.type === 'freeze') {
-        const score = calculateRoundScore([...rs.hand, card], rs.isFlip7);
+        const score = calculateRoundScore([...rs.hand, card], rs.isLucky7);
         const updatedPlayer: Player = {
           ...player,
           roundState: {
@@ -129,10 +129,10 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       if (card.type === 'x2' || card.type === 'plus3') {
         const newHand = [...rs.hand, card];
         const uniqueNums = countUniqueNumbers(newHand);
-        const isFlip7 = uniqueNums >= 7;
+        const isLucky7 = uniqueNums >= 7;
         const updatedPlayer: Player = {
           ...player,
-          roundState: { ...rs, hand: newHand, isFlip7 },
+          roundState: { ...rs, hand: newHand, isLucky7 },
         };
         let next: GameState = {
           ...state,
@@ -142,7 +142,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             i === playerIdx ? updatedPlayer : p
           ),
         };
-        if (isFlip7) return applyAction(next, { type: 'STAY' });
+        if (isLucky7) return applyAction(next, { type: 'STAY' });
         if (state.config.gameMode === 'one-per-turn') {
           return applyAction(next, { type: 'NEXT_TURN' });
         }
@@ -159,14 +159,14 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         // Consume second chance
         const newHand = [...rs.hand, card];
         const uniqueNums = countUniqueNumbers(newHand);
-        const isFlip7 = uniqueNums >= 7;
+        const isLucky7 = uniqueNums >= 7;
         const updatedPlayer: Player = {
           ...player,
           roundState: {
             ...rs,
             hand: newHand,
             secondChances: rs.secondChances - 1,
-            isFlip7,
+            isLucky7,
           },
         };
         let next: GameState = {
@@ -177,7 +177,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             i === playerIdx ? updatedPlayer : p
           ),
         };
-        if (isFlip7) return applyAction(next, { type: 'STAY' });
+        if (isLucky7) return applyAction(next, { type: 'STAY' });
         if (state.config.gameMode === 'one-per-turn') {
           return applyAction(next, { type: 'NEXT_TURN' });
         }
@@ -210,10 +210,10 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       // Safe number card
       const newHand = [...rs.hand, card];
       const uniqueNums = countUniqueNumbers(newHand);
-      const isFlip7 = uniqueNums >= 7;
+      const isLucky7 = uniqueNums >= 7;
       const updatedPlayer: Player = {
         ...player,
-        roundState: { ...rs, hand: newHand, isFlip7 },
+        roundState: { ...rs, hand: newHand, isLucky7 },
       };
       let next: GameState = {
         ...state,
@@ -223,7 +223,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
           i === playerIdx ? updatedPlayer : p
         ),
       };
-      if (isFlip7) return applyAction(next, { type: 'STAY' });
+      if (isLucky7) return applyAction(next, { type: 'STAY' });
       if (state.config.gameMode === 'one-per-turn') {
         return applyAction(next, { type: 'NEXT_TURN' });
       }
@@ -235,7 +235,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       const playerIdx = state.currentPlayerIndex;
       const player = state.players[playerIdx];
       const rs = player.roundState;
-      const score = calculateRoundScore(rs.hand, rs.isFlip7);
+      const score = calculateRoundScore(rs.hand, rs.isLucky7);
       const updatedPlayer: Player = {
         ...player,
         roundState: { ...rs, stayed: true, roundScore: score },

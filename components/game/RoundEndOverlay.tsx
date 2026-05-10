@@ -28,8 +28,8 @@ export function RoundEndOverlay({ state, isHost, onBeginRound }: RoundEndOverlay
                 {p.roundState.busted && (
                   <span className="text-red-400 text-xs">bust</span>
                 )}
-                {p.roundState.isFlip7 && (
-                  <span className="text-yellow-400 text-xs">FLIP7</span>
+                {p.roundState.isLucky7 && (
+                  <span className="text-yellow-400 text-xs">Lucky 7</span>
                 )}
               </div>
               <div className="text-right">

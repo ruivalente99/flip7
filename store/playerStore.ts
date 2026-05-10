@@ -63,6 +63,6 @@ export const usePlayerStore = create<PlayerStore>()(
       setName: (name) => set({ name }),
       setEmoji: (emoji) => set({ emoji }),
     }),
-    { name: 'flip7:player' }
+    { name: 'cardrush:player' }
   )
 );

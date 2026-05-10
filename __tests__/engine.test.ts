@@ -37,15 +37,15 @@ describe('START_GAME', () => {
   });
 });
 
-describe('FLIP - bust detection', () => {
+describe('DRAW - bust detection', () => {
   it('busts when duplicate number drawn and no second chance', () => {
     // Two cards with the same value → second draw must bust
     const fixedDeck: Card[] = [makeCard('number', 3), makeCard('number', 3), makeCard('number', 5)];
     vi.spyOn(deckModule, 'buildDeck').mockReturnValueOnce(fixedDeck);
 
     let state = applyAction(makeState(), { type: 'START_GAME' });
-    state = applyAction(state, { type: 'FLIP' }); // draw 3 — safe
-    state = applyAction(state, { type: 'FLIP' }); // draw duplicate 3 → BUST + NEXT_TURN
+    state = applyAction(state, { type: 'DRAW' }); // draw 3 — safe
+    state = applyAction(state, { type: 'DRAW' }); // draw duplicate 3 → BUST + NEXT_TURN
 
     const p1 = state.players[0];
     expect(p1.roundState.busted).toBe(true);
@@ -61,9 +61,9 @@ describe('FLIP - bust detection', () => {
     vi.spyOn(deckModule, 'buildDeck').mockReturnValueOnce(fixedDeck);
 
     let state = applyAction(makeState(), { type: 'START_GAME' });
-    state = applyAction(state, { type: 'FLIP' }); // draw second_chance
-    state = applyAction(state, { type: 'FLIP' }); // draw 3
-    state = applyAction(state, { type: 'FLIP' }); // draw duplicate 3 — second chance absorbs
+    state = applyAction(state, { type: 'DRAW' }); // draw second_chance
+    state = applyAction(state, { type: 'DRAW' }); // draw 3
+    state = applyAction(state, { type: 'DRAW' }); // draw duplicate 3 — second chance absorbs
 
     const p1 = state.players[0];
     expect(p1.roundState.busted).toBe(false);
@@ -77,7 +77,7 @@ describe('STAY', () => {
     vi.spyOn(deckModule, 'buildDeck').mockReturnValueOnce(fixedDeck);
 
     let state = applyAction(makeState(), { type: 'START_GAME' });
-    state = applyAction(state, { type: 'FLIP' }); // draw 5
+    state = applyAction(state, { type: 'DRAW' }); // draw 5
     state = applyAction(state, { type: 'STAY' });
 
     const p1 = state.players[0];
@@ -87,7 +87,7 @@ describe('STAY', () => {
   });
 });
 
-describe('FLIP7 bonus', () => {
+describe('Lucky 7 bonus', () => {
   it('triggers when 7 unique number cards drawn', () => {
     const fixedDeck: Card[] = [0, 1, 2, 3, 4, 5, 6].map((v) =>
       makeCard('number', v)
@@ -96,13 +96,13 @@ describe('FLIP7 bonus', () => {
 
     let state = applyAction(makeState(), { type: 'START_GAME' });
     for (let i = 0; i < 7; i++) {
-      state = applyAction(state, { type: 'FLIP' });
+      state = applyAction(state, { type: 'DRAW' });
     }
 
     const p1 = state.players[0];
-    expect(p1.roundState.isFlip7).toBe(true);
+    expect(p1.roundState.isLucky7).toBe(true);
     expect(p1.roundState.stayed).toBe(true);
-    // base = 0+1+2+3+4+5+6 = 21, +FLIP7_BONUS(15) = 36
+    // base = 0+1+2+3+4+5+6 = 21, +LUCKY7_BONUS(15) = 36
     expect(p1.roundState.roundScore).toBe(36);
   });
 });
@@ -123,7 +123,7 @@ describe('win condition', () => {
     });
     state = applyAction(state, { type: 'START_GAME' });
     // p1 flips 12 and stays
-    state = applyAction(state, { type: 'FLIP' });
+    state = applyAction(state, { type: 'DRAW' });
     state = applyAction(state, { type: 'STAY' });
     // p2 stays with 0 score — all players done → NEXT_ROUND fires → ROUND_END
     state = applyAction(state, { type: 'STAY' });

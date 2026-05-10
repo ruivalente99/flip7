@@ -7,7 +7,7 @@ export const prisma =
   globalForPrisma.prisma ??
   (() => {
     const adapter = new PrismaLibSql({
-      url: process.env.TURSO_DATABASE_URL ?? 'file:./flip7.db',
+      url: process.env.TURSO_DATABASE_URL ?? 'file:./card-rush.db',
       authToken: process.env.TURSO_AUTH_TOKEN,
     });
     return new PrismaClient({ adapter } as ConstructorParameters<typeof PrismaClient>[0]);

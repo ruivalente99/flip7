@@ -19,7 +19,7 @@ export function PlayerHand({ player, isActive, deck, size = 'md', emoji }: Playe
   const uniqueNums = countUniqueNumbers(rs.hand);
   const bustProb = bustProbability(deck, rs.hand);
   const bustPct = Math.round(bustProb * 100);
-  const liveScore = rs.busted ? 0 : calculateRoundScore(rs.hand, rs.isFlip7);
+  const liveScore = rs.busted ? 0 : calculateRoundScore(rs.hand, rs.isLucky7);
 
   return (
     <div
@@ -39,8 +39,8 @@ export function PlayerHand({ player, isActive, deck, size = 'md', emoji }: Playe
           {rs.busted && <Badge variant="destructive" className="text-xs px-1.5">Bust!</Badge>}
           {rs.stayed && <Badge className="bg-emerald-700 text-white text-xs px-1.5">Stayed</Badge>}
           {rs.froze && <Badge className="bg-primary/70 text-primary-foreground text-xs px-1.5">Frozen</Badge>}
-          {rs.isFlip7 && (
-            <Badge className="bg-yellow-500 text-black text-xs font-bold px-1.5">FLIP 7! 🎉</Badge>
+          {rs.isLucky7 && (
+            <Badge className="bg-yellow-500 text-black text-xs font-bold px-1.5">Lucky 7! 🍀</Badge>
           )}
         </div>
         <div className="text-right shrink-0">

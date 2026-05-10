@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateRoundScore, bustProbability, countUniqueNumbers, FLIP7_BONUS } from '../lib/game/scoring';
+import { calculateRoundScore, bustProbability, countUniqueNumbers, LUCKY7_BONUS } from '../lib/game/scoring';
 import type { Card } from '../lib/game/types';
 
 function num(value: number): Card {
@@ -27,8 +27,8 @@ describe('calculateRoundScore', () => {
     expect(calculateRoundScore([num(4), x2, plus3], false)).toBe(11);
   });
 
-  it('adds FLIP7_BONUS when isFlip7', () => {
-    expect(calculateRoundScore([num(1), num(2)], true)).toBe(3 + FLIP7_BONUS);
+  it('adds LUCKY7_BONUS when isLucky7', () => {
+    expect(calculateRoundScore([num(1), num(2)], true)).toBe(3 + LUCKY7_BONUS);
   });
 
   it('ignores non-number cards for base', () => {

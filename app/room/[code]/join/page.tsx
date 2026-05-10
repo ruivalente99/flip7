@@ -44,8 +44,8 @@ export default function JoinPage() {
     setPlayerId(id);
     setRoomCode(code);
 
-    sessionStorage.setItem('flip7:playerId', id);
-    sessionStorage.setItem('flip7:roomCode', code);
+    sessionStorage.setItem('cardrush:playerId', id);
+    sessionStorage.setItem('cardrush:roomCode', code);
 
     router.push(`/room/${code}/lobby`);
   };

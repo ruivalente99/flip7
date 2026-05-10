@@ -13,7 +13,7 @@ export interface PlayerRoundState {
   stayed: boolean;
   busted: boolean;
   roundScore: number;
-  isFlip7: boolean;
+  isLucky7: boolean;
 }
 
 export interface Player {
@@ -47,7 +47,7 @@ export interface GameState {
 }
 
 export type GameAction =
-  | { type: 'FLIP' }
+  | { type: 'DRAW' }
   | { type: 'STAY' }
   | { type: 'START_GAME' }
   | { type: 'NEXT_TURN' }

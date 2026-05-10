@@ -14,6 +14,6 @@ export const useThemeStore = create<ThemeStore>()(
       theme: 'dark',
       setTheme: (theme) => set({ theme }),
     }),
-    { name: 'flip7:theme' }
+    { name: 'cardrush:theme' }
   )
 );

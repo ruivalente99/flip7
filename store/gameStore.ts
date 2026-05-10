@@ -79,18 +79,18 @@ export const useGameStore = create<GameStore>((set, get) => ({
   setOnlineGame: (state) => set({ onlineGame: state }),
   setRoomCode: (code) => {
     set({ roomCode: code });
-    if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('flip7:roomCode', code);
+    if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('cardrush:roomCode', code);
   },
   setPlayerId: (id) => {
     set({ playerId: id });
-    if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('flip7:playerId', id);
+    if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('cardrush:playerId', id);
   },
   setLastSeq: (seq) => set({ lastSeq: seq }),
   clearOnlineGame: () => {
     set({ onlineGame: null, lastSeq: 0, roomCode: null, playerId: null });
     if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.removeItem('flip7:roomCode');
-      sessionStorage.removeItem('flip7:playerId');
+      sessionStorage.removeItem('cardrush:roomCode');
+      sessionStorage.removeItem('cardrush:playerId');
     }
   },
 
