@@ -16,17 +16,17 @@ export function DeckCounter({ deck, discardPile }: DeckCounterProps) {
       <div className="flex flex-col items-center gap-1">
         <div className="relative">
           <GameCard card={{ id: 'back', type: 'number' }} faceDown />
-          <span className="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow">
+          <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow">
             {deck.length}
           </span>
         </div>
-        <span className="text-slate-400 text-xs">Deck</span>
+        <span className="text-muted-foreground text-xs">Deck</span>
       </div>
 
       {topDiscard && (
         <div className="flex flex-col items-center gap-1">
           <GameCard card={topDiscard} />
-          <span className="text-slate-400 text-xs">Last flipped</span>
+          <span className="text-muted-foreground text-xs">Last flipped</span>
         </div>
       )}
     </div>

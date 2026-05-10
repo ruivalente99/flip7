@@ -101,7 +101,7 @@ export default function HomePage() {
           <GameHeader left={
             <button onClick={() => setMode('home')} className="text-muted-foreground hover:text-foreground text-sm">← Back</button>
           } />
-          <h1 className="text-3xl font-black text-foreground">Local Game</h1>
+          <h1 className="text-3xl font-black text-foreground brand-heading">Local Game</h1>
           <div className="space-y-2">
             <label className="text-muted-foreground text-sm">Players (2–6)</label>
             {players.map((p, i) => (
@@ -147,7 +147,7 @@ export default function HomePage() {
           <GameHeader left={
             <button onClick={() => setMode('home')} className="text-muted-foreground hover:text-foreground text-sm">← Back</button>
           } />
-          <h1 className="text-3xl font-black text-foreground">Create Room</h1>
+          <h1 className="text-3xl font-black text-foreground brand-heading">Create Room</h1>
           <div>
             <label className="text-muted-foreground text-sm">Your name</label>
             <input className="game-input mt-1" value={hostName} onChange={(e) => setHostName(e.target.value)} placeholder="Your name" />
@@ -172,7 +172,7 @@ export default function HomePage() {
           <GameHeader left={
             <button onClick={() => setMode('home')} className="text-muted-foreground hover:text-foreground text-sm">← Back</button>
           } />
-          <h1 className="text-3xl font-black text-foreground">Join Room</h1>
+          <h1 className="text-3xl font-black text-foreground brand-heading">Join Room</h1>
           <div>
             <label className="text-muted-foreground text-sm">Room code</label>
             <input className="game-input mt-1 uppercase font-mono tracking-widest text-center text-xl" value={roomCode} onChange={(e) => setRoomCode(e.target.value.toUpperCase())} maxLength={6} placeholder="ABC123" />
@@ -194,7 +194,7 @@ export default function HomePage() {
       <GameHeader />
       <div className="flex-1 flex flex-col items-center justify-center gap-8">
         <div className="text-center">
-          <h1 className="text-7xl font-black text-foreground mb-2">
+          <h1 className="text-7xl font-black text-foreground mb-2 brand-heading">
             FLIP<span className="text-primary">7</span>
           </h1>
           <p className="text-muted-foreground text-lg">Push your luck. Know when to stop.</p>
