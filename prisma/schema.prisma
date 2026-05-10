@@ -1,0 +1,44 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+model Room {
+  id        String       @id @default(cuid())
+  code      String       @unique
+  hostId    String
+  state     String
+  phase     String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  expiresAt DateTime
+  players   RoomPlayer[]
+  events    RoomEvent[]
+}
+
+model RoomPlayer {
+  id        String   @id @default(cuid())
+  roomId    String
+  playerId  String
+  name      String
+  connected Boolean  @default(true)
+  lastSeen  DateTime @updatedAt
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, playerId])
+}
+
+model RoomEvent {
+  id        Int      @id @default(autoincrement())
+  roomId    String
+  seq       Int
+  payload   String
+  createdAt DateTime @default(now())
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@index([roomId, seq])
+}
