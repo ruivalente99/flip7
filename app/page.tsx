@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { ThemeSwitcher } from '@/components/ui/theme-switcher';
+import { GameHeader } from '@/components/ui/game-header';
 import { useGameStore } from '@/store/gameStore';
+import { usePlayerStore } from '@/store/playerStore';
 import { createInitialState } from '@/lib/game/engine';
 import { v4 as uuidv4 } from 'uuid';
 import type { GameMode } from '@/lib/game/types';
@@ -17,27 +18,23 @@ interface PlayerEntry {
 export default function HomePage() {
   const router = useRouter();
   const { setLocalGame } = useGameStore();
+  const { name: savedName, emoji } = usePlayerStore();
+
   const [mode, setMode] = useState<'home' | 'local-setup' | 'online-create' | 'online-join'>('home');
   const [players, setPlayers] = useState<PlayerEntry[]>([
-    { id: uuidv4(), name: 'Player 1' },
+    { id: uuidv4(), name: savedName },
     { id: uuidv4(), name: 'Player 2' },
   ]);
   const [pointTarget, setPointTarget] = useState(200);
   const [gameMode, setGameMode] = useState<GameMode>('free');
   const [roomCode, setRoomCode] = useState('');
-  const [joinName, setJoinName] = useState('');
-  const [hostName, setHostName] = useState('');
+  const [joinName, setJoinName] = useState(savedName);
+  const [hostName, setHostName] = useState(savedName);
 
   const startLocal = () => {
     const validPlayers = players.filter((p) => p.name.trim());
     if (validPlayers.length < 2) return;
-
-    const state = createInitialState({
-      pointTarget,
-      turnTimerSeconds: 0,
-      gameMode,
-      players: validPlayers,
-    });
+    const state = createInitialState({ pointTarget, turnTimerSeconds: 0, gameMode, players: validPlayers });
     setLocalGame(state);
     router.push('/local');
   };
@@ -77,30 +74,22 @@ export default function HomePage() {
 
   const GameModeSelector = () => (
     <div>
-      <label className="text-slate-400 text-sm">Game mode</label>
+      <label className="text-muted-foreground text-sm">Game mode</label>
       <div className="mt-1 flex gap-2">
-        <button
-          onClick={() => setGameMode('free')}
-          className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-all ${
-            gameMode === 'free'
-              ? 'bg-indigo-600 border-indigo-500 text-white'
-              : 'bg-slate-800 border-slate-600 text-slate-300 hover:border-slate-500'
-          }`}
-        >
-          Free Play
-          <div className="text-xs font-normal opacity-70 mt-0.5">Flip until you stay</div>
-        </button>
-        <button
-          onClick={() => setGameMode('one-per-turn')}
-          className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-all ${
-            gameMode === 'one-per-turn'
-              ? 'bg-indigo-600 border-indigo-500 text-white'
-              : 'bg-slate-800 border-slate-600 text-slate-300 hover:border-slate-500'
-          }`}
-        >
-          One Per Turn
-          <div className="text-xs font-normal opacity-70 mt-0.5">One card each round</div>
-        </button>
+        {([['free', 'Free Play', 'Flip until you stay'], ['one-per-turn', 'One Per Turn', 'One card each round']] as const).map(([val, title, sub]) => (
+          <button
+            key={val}
+            onClick={() => setGameMode(val)}
+            className={`flex-1 py-2 px-3 rounded-[var(--radius-md)] text-sm font-medium border transition-all text-left ${
+              gameMode === val
+                ? 'bg-primary border-primary text-primary-foreground'
+                : 'bg-muted border-border text-foreground hover:bg-accent'
+            }`}
+          >
+            {title}
+            <div className="text-xs font-normal opacity-70 mt-0.5">{sub}</div>
+          </button>
+        ))}
       </div>
     </div>
   );
@@ -109,19 +98,16 @@ export default function HomePage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
         <div className="w-full max-w-md space-y-6">
-          <div className="flex items-center justify-between">
-            <button onClick={() => setMode('home')} className="text-slate-400 hover:text-white text-sm">
-              ← Back
-            </button>
-            <ThemeSwitcher />
-          </div>
-          <h1 className="text-3xl font-black text-white">Local Game</h1>
+          <GameHeader left={
+            <button onClick={() => setMode('home')} className="text-muted-foreground hover:text-foreground text-sm">← Back</button>
+          } />
+          <h1 className="text-3xl font-black text-foreground">Local Game</h1>
           <div className="space-y-2">
-            <label className="text-slate-400 text-sm">Players (2–6)</label>
+            <label className="text-muted-foreground text-sm">Players (2–6)</label>
             {players.map((p, i) => (
               <div key={p.id} className="flex gap-2">
                 <input
-                  className="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="game-input flex-1"
                   value={p.name}
                   onChange={(e) => {
                     const updated = [...players];
@@ -131,42 +117,22 @@ export default function HomePage() {
                   placeholder={`Player ${i + 1}`}
                 />
                 {players.length > 2 && (
-                  <button
-                    onClick={() => setPlayers(players.filter((_, j) => j !== i))}
-                    className="text-slate-500 hover:text-red-400 px-2"
-                  >
-                    ✕
-                  </button>
+                  <button onClick={() => setPlayers(players.filter((_, j) => j !== i))} className="text-muted-foreground hover:text-destructive px-2">✕</button>
                 )}
               </div>
             ))}
             {players.length < 6 && (
-              <button
-                onClick={() =>
-                  setPlayers([...players, { id: uuidv4(), name: `Player ${players.length + 1}` }])
-                }
-                className="text-indigo-400 hover:text-indigo-300 text-sm"
-              >
+              <button onClick={() => setPlayers([...players, { id: uuidv4(), name: `Player ${players.length + 1}` }])} className="text-primary hover:text-primary/80 text-sm">
                 + Add player
               </button>
             )}
           </div>
           <GameModeSelector />
           <div>
-            <label className="text-slate-400 text-sm">Win condition (points)</label>
-            <input
-              type="number"
-              className="w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white"
-              value={pointTarget}
-              onChange={(e) => setPointTarget(Number(e.target.value))}
-              min={50}
-              step={50}
-            />
+            <label className="text-muted-foreground text-sm">Win condition (points)</label>
+            <input type="number" className="game-input mt-1" value={pointTarget} onChange={(e) => setPointTarget(Number(e.target.value))} min={50} step={50} />
           </div>
-          <Button
-            onClick={startLocal}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 font-bold py-5 text-lg"
-          >
+          <Button onClick={startLocal} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-5 text-lg">
             Start Game
           </Button>
         </div>
@@ -178,38 +144,20 @@ export default function HomePage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
         <div className="w-full max-w-md space-y-6">
-          <div className="flex items-center justify-between">
-            <button onClick={() => setMode('home')} className="text-slate-400 hover:text-white text-sm">
-              ← Back
-            </button>
-            <ThemeSwitcher />
-          </div>
-          <h1 className="text-3xl font-black text-white">Create Room</h1>
+          <GameHeader left={
+            <button onClick={() => setMode('home')} className="text-muted-foreground hover:text-foreground text-sm">← Back</button>
+          } />
+          <h1 className="text-3xl font-black text-foreground">Create Room</h1>
           <div>
-            <label className="text-slate-400 text-sm">Your name</label>
-            <input
-              className="w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white"
-              value={hostName}
-              onChange={(e) => setHostName(e.target.value)}
-              placeholder="Your name"
-            />
+            <label className="text-muted-foreground text-sm">Your name</label>
+            <input className="game-input mt-1" value={hostName} onChange={(e) => setHostName(e.target.value)} placeholder="Your name" />
           </div>
           <GameModeSelector />
           <div>
-            <label className="text-slate-400 text-sm">Win condition (points)</label>
-            <input
-              type="number"
-              className="w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white"
-              value={pointTarget}
-              onChange={(e) => setPointTarget(Number(e.target.value))}
-              min={50}
-              step={50}
-            />
+            <label className="text-muted-foreground text-sm">Win condition (points)</label>
+            <input type="number" className="game-input mt-1" value={pointTarget} onChange={(e) => setPointTarget(Number(e.target.value))} min={50} step={50} />
           </div>
-          <Button
-            onClick={createOnlineRoom}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 font-bold py-5 text-lg"
-          >
+          <Button onClick={createOnlineRoom} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-5 text-lg">
             Create Room
           </Button>
         </div>
@@ -221,36 +169,19 @@ export default function HomePage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
         <div className="w-full max-w-md space-y-6">
-          <div className="flex items-center justify-between">
-            <button onClick={() => setMode('home')} className="text-slate-400 hover:text-white text-sm">
-              ← Back
-            </button>
-            <ThemeSwitcher />
-          </div>
-          <h1 className="text-3xl font-black text-white">Join Room</h1>
+          <GameHeader left={
+            <button onClick={() => setMode('home')} className="text-muted-foreground hover:text-foreground text-sm">← Back</button>
+          } />
+          <h1 className="text-3xl font-black text-foreground">Join Room</h1>
           <div>
-            <label className="text-slate-400 text-sm">Room code</label>
-            <input
-              className="w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white uppercase font-mono tracking-widest text-center text-xl"
-              value={roomCode}
-              onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-              maxLength={6}
-              placeholder="ABC123"
-            />
+            <label className="text-muted-foreground text-sm">Room code</label>
+            <input className="game-input mt-1 uppercase font-mono tracking-widest text-center text-xl" value={roomCode} onChange={(e) => setRoomCode(e.target.value.toUpperCase())} maxLength={6} placeholder="ABC123" />
           </div>
           <div>
-            <label className="text-slate-400 text-sm">Your name</label>
-            <input
-              className="w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white"
-              value={joinName}
-              onChange={(e) => setJoinName(e.target.value)}
-              placeholder="Your name"
-            />
+            <label className="text-muted-foreground text-sm">Your name</label>
+            <input className="game-input mt-1" value={joinName} onChange={(e) => setJoinName(e.target.value)} placeholder="Your name" />
           </div>
-          <Button
-            onClick={joinOnlineRoom}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 font-bold py-5 text-lg"
-          >
+          <Button onClick={joinOnlineRoom} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-5 text-lg">
             Join Room
           </Button>
         </div>
@@ -259,41 +190,30 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-8">
-      <div className="absolute top-4 right-4">
-        <ThemeSwitcher />
+    <div className="min-h-screen flex flex-col p-4">
+      <GameHeader />
+      <div className="flex-1 flex flex-col items-center justify-center gap-8">
+        <div className="text-center">
+          <h1 className="text-7xl font-black text-foreground mb-2">
+            FLIP<span className="text-primary">7</span>
+          </h1>
+          <p className="text-muted-foreground text-lg">Push your luck. Know when to stop.</p>
+        </div>
+        <div className="w-full max-w-sm space-y-3">
+          <Button onClick={() => setMode('local-setup')} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 text-lg rounded-[var(--radius-xl)]">
+            🎮 Local Game
+          </Button>
+          <Button onClick={() => setMode('online-create')} variant="outline" className="w-full border-border text-foreground hover:bg-accent font-bold py-6 text-lg rounded-[var(--radius-xl)]">
+            🌐 Create Online Room
+          </Button>
+          <Button onClick={() => setMode('online-join')} variant="outline" className="w-full border-border text-foreground hover:bg-accent font-bold py-6 text-lg rounded-[var(--radius-xl)]">
+            🔗 Join Room
+          </Button>
+        </div>
+        <p className="text-muted-foreground text-xs text-center max-w-xs">
+          Flip cards to score points. Flip a duplicate and lose everything. First to {pointTarget} wins!
+        </p>
       </div>
-      <div className="text-center">
-        <h1 className="text-7xl font-black text-white mb-2">
-          FLIP<span className="text-indigo-400">7</span>
-        </h1>
-        <p className="text-slate-400 text-lg">Push your luck. Know when to stop.</p>
-      </div>
-      <div className="w-full max-w-sm space-y-3">
-        <Button
-          onClick={() => setMode('local-setup')}
-          className="w-full bg-indigo-600 hover:bg-indigo-500 font-bold py-6 text-lg rounded-xl"
-        >
-          🎮 Local Game
-        </Button>
-        <Button
-          onClick={() => setMode('online-create')}
-          variant="outline"
-          className="w-full border-slate-600 text-slate-200 hover:bg-slate-800 font-bold py-6 text-lg rounded-xl"
-        >
-          🌐 Create Online Room
-        </Button>
-        <Button
-          onClick={() => setMode('online-join')}
-          variant="outline"
-          className="w-full border-slate-600 text-slate-200 hover:bg-slate-800 font-bold py-6 text-lg rounded-xl"
-        >
-          🔗 Join Room
-        </Button>
-      </div>
-      <p className="text-slate-600 text-xs text-center max-w-xs">
-        Flip cards to score points. Flip a duplicate and lose everything. First to {pointTarget} wins!
-      </p>
     </div>
   );
 }

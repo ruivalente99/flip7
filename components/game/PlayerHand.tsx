@@ -11,9 +11,10 @@ interface PlayerHandProps {
   isActive: boolean;
   deck: Card[];
   size?: 'sm' | 'md';
+  emoji?: string;
 }
 
-export function PlayerHand({ player, isActive, deck, size = 'md' }: PlayerHandProps) {
+export function PlayerHand({ player, isActive, deck, size = 'md', emoji }: PlayerHandProps) {
   const rs = player.roundState;
   const uniqueNums = countUniqueNumbers(rs.hand);
   const bustProb = bustProbability(deck, rs.hand);
@@ -21,17 +22,18 @@ export function PlayerHand({ player, isActive, deck, size = 'md' }: PlayerHandPr
 
   return (
     <div
-      className={`rounded-2xl p-3 border-2 transition-all ${
+      className={`rounded-[var(--radius-lg)] p-3 border-2 transition-all ${
         isActive
-          ? 'border-indigo-500 bg-indigo-950/50 shadow-lg shadow-indigo-500/20'
-          : 'border-slate-700 bg-slate-900/30'
+          ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
+          : 'border-border bg-card/30'
       }`}
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="font-semibold text-white text-sm">{player.name}</span>
+          {emoji && <span className="text-base">{emoji}</span>}
+          <span className="font-semibold text-foreground text-sm">{player.name}</span>
           {isActive && (
-            <Badge className="bg-indigo-600 text-white text-xs animate-pulse">Turn</Badge>
+            <Badge className="bg-primary text-primary-foreground text-xs animate-pulse">Turn</Badge>
           )}
           {rs.busted && <Badge variant="destructive" className="text-xs">Bust!</Badge>}
           {rs.stayed && <Badge className="bg-green-700 text-white text-xs">Stayed</Badge>}
@@ -41,8 +43,8 @@ export function PlayerHand({ player, isActive, deck, size = 'md' }: PlayerHandPr
           )}
         </div>
         <div className="text-right shrink-0">
-          <div className="text-slate-400 text-xs">Round</div>
-          <div className="text-white font-bold text-sm">{rs.roundScore}</div>
+          <div className="text-muted-foreground text-xs">Round</div>
+          <div className="text-foreground font-bold text-sm">{rs.roundScore}</div>
         </div>
       </div>
 
@@ -51,12 +53,12 @@ export function PlayerHand({ player, isActive, deck, size = 'md' }: PlayerHandPr
           <GameCard key={card.id} card={card} size={size} animate />
         ))}
         {rs.hand.length === 0 && (
-          <span className="text-slate-600 text-sm italic">No cards yet</span>
+          <span className="text-muted-foreground text-sm italic">No cards yet</span>
         )}
       </div>
 
       {isActive && rs.hand.length > 0 && !rs.busted && !rs.stayed && !rs.froze && (
-        <div className="mt-2 flex items-center gap-2 text-xs text-slate-400">
+        <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
           <span>{uniqueNums}/7 unique</span>
           <span>·</span>
           <span

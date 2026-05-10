@@ -12,7 +12,7 @@ import { BustOverlay } from '@/components/game/BustOverlay';
 import { WinOverlay } from '@/components/game/WinOverlay';
 import { PassDeviceModal } from '@/components/game/PassDeviceModal';
 import { RoundEndOverlay } from '@/components/game/RoundEndOverlay';
-import { ThemeSwitcher } from '@/components/ui/theme-switcher';
+import { GameHeader } from '@/components/ui/game-header';
 import { Button } from '@/components/ui/button';
 import type { GameAction } from '@/lib/game/types';
 
@@ -22,16 +22,12 @@ export default function LocalGamePage() {
   const { setUI } = useGameStore();
 
   useEffect(() => {
-    if (!state) {
-      router.replace('/');
-    }
+    if (!state) router.replace('/');
   }, [state]);
 
   if (!state) return null;
 
-  const handleStartGame = () => {
-    dispatch({ type: 'START_GAME' });
-  };
+  const handleStartGame = () => dispatch({ type: 'START_GAME' });
 
   const currentPlayer = state.players[state.currentPlayerIndex];
 
@@ -64,21 +60,20 @@ export default function LocalGamePage() {
 
   return (
     <div className="min-h-screen flex flex-col p-4 gap-4 max-w-7xl mx-auto w-full">
-      <div className="flex items-center justify-between">
-        <button onClick={() => router.push('/')} className="text-slate-400 hover:text-white text-sm">
-          ← Menu
-        </button>
-        <div className="flex items-center gap-3">
-          <span className="text-slate-500 text-sm">Round {state.round}</span>
-          <ThemeSwitcher />
-        </div>
-      </div>
+      <GameHeader
+        left={
+          <button onClick={() => router.push('/')} className="text-muted-foreground hover:text-foreground text-sm">
+            ← Menu
+          </button>
+        }
+        meta={`Round ${state.round}`}
+      />
 
       {state.phase === 'LOBBY' && (
         <div className="flex-1 flex items-center justify-center">
           <Button
             onClick={handleStartGame}
-            className="bg-indigo-600 hover:bg-indigo-500 font-bold py-6 px-12 text-xl rounded-xl"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 px-12 text-xl rounded-[var(--radius-xl)]"
           >
             Start Game
           </Button>
@@ -87,7 +82,6 @@ export default function LocalGamePage() {
 
       {(state.phase === 'PLAYING' || state.phase === 'ROUND_END') && (
         <div className="flex flex-col md:flex-row gap-4 flex-1">
-          {/* Left: deck + player hands */}
           <div className="flex flex-col gap-3 md:flex-1 md:min-w-0">
             <DeckCounter deck={state.deck} discardPile={state.discardPile} />
             <div className="space-y-2">
@@ -103,7 +97,6 @@ export default function LocalGamePage() {
             </div>
           </div>
 
-          {/* Right: scoreboard + action bar */}
           <div className="flex flex-col gap-3 md:w-72 md:shrink-0">
             <Scoreboard
               players={state.players}

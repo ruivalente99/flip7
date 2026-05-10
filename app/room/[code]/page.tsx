@@ -10,7 +10,7 @@ import { Scoreboard } from '@/components/game/Scoreboard';
 import { ActionBar } from '@/components/game/ActionBar';
 import { BustOverlay } from '@/components/game/BustOverlay';
 import { RoundEndOverlay } from '@/components/game/RoundEndOverlay';
-import { ThemeSwitcher } from '@/components/ui/theme-switcher';
+import { GameHeader } from '@/components/ui/game-header';
 import type { GameAction } from '@/lib/game/types';
 
 export default function OnlineGamePage() {
@@ -42,7 +42,7 @@ export default function OnlineGamePage() {
   if (!onlineGame) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-slate-400 animate-pulse">Connecting…</div>
+        <div className="text-muted-foreground animate-pulse">Connecting…</div>
       </div>
     );
   }
@@ -53,18 +53,16 @@ export default function OnlineGamePage() {
 
   return (
     <div className="min-h-screen flex flex-col p-4 gap-4 max-w-7xl mx-auto w-full">
-      <div className="flex items-center justify-between">
-        <button onClick={() => router.push('/')} className="text-slate-400 hover:text-white text-sm">
-          ← Leave
-        </button>
-        <div className="flex items-center gap-3">
-          <span className="text-slate-500 text-sm font-mono">{code} · Round {state.round}</span>
-          <ThemeSwitcher />
-        </div>
-      </div>
+      <GameHeader
+        left={
+          <button onClick={() => router.push('/')} className="text-muted-foreground hover:text-foreground text-sm">
+            ← Leave
+          </button>
+        }
+        meta={`${code} · Round ${state.round}`}
+      />
 
       <div className="flex flex-col md:flex-row gap-4 flex-1">
-        {/* Left: deck + player hands */}
         <div className="flex flex-col gap-3 md:flex-1 md:min-w-0">
           <DeckCounter deck={state.deck} discardPile={state.discardPile} />
           <div className="space-y-2">
@@ -80,7 +78,6 @@ export default function OnlineGamePage() {
           </div>
         </div>
 
-        {/* Right: scoreboard + action bar */}
         <div className="flex flex-col gap-3 md:w-72 md:shrink-0">
           <Scoreboard
             players={state.players}

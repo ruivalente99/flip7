@@ -17,8 +17,8 @@ export function ActionBar({ state, playerId, onAction }: ActionBarProps) {
 
   if (!isMyTurn || !rs) {
     return (
-      <div className="text-center text-slate-500 py-4">
-        Waiting for <span className="text-slate-300 font-medium">{current?.name}</span>…
+      <div className="text-center text-muted-foreground py-4">
+        Waiting for <span className="text-foreground font-medium">{current?.name}</span>…
       </div>
     );
   }
@@ -31,7 +31,7 @@ export function ActionBar({ state, playerId, onAction }: ActionBarProps) {
       <div className="flex gap-3">
         <Button
           onClick={() => onAction({ type: 'FLIP' })}
-          className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-6 text-lg rounded-xl"
+          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 text-lg rounded-[var(--radius-xl)]"
           disabled={state.deck.length === 0}
         >
           🎴 Flip
@@ -39,7 +39,7 @@ export function ActionBar({ state, playerId, onAction }: ActionBarProps) {
         <Button
           onClick={() => onAction({ type: 'STAY' })}
           variant="outline"
-          className="flex-1 border-slate-600 text-slate-200 hover:bg-slate-700 font-bold py-6 text-lg rounded-xl"
+          className="flex-1 border-border text-foreground hover:bg-accent font-bold py-6 text-lg rounded-[var(--radius-xl)]"
           disabled={rs.hand.length === 0}
         >
           ✋ Stay
